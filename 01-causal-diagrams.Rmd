@@ -94,7 +94,7 @@ In order to push your changes to GitHub, click on **Push**.
 
 2. We are going to create a causal diagram using the assumptions in Exercise 1. Specify a directed acyclic graph (DAG) with `dagify()`. Plot the causal diagram using `ggdag()`.
 
-3. Underneath the hood, `ggdag()` calls the `tidy_dagitty()` function on `dagitty` objects. Check the help page for `?tidy_dagitty()` and try using one of the layouts listed in `?layout_tbl_graph_igraph()`. Experiment with different layouts. Plot them with `ggdag()`
+3. Underneath the hood, `ggdag()` calls the `tidy_dagitty()` function on `dagitty` objects. Check the help page for `?tidy_dagitty()` and try using one of the layouts listed in `?ggraph::layout_tbl_graph_igraph()`. Experiment with different layouts. Plot them with `ggdag()`
 
 4. We are assuming that coffee does *not* cause lung cancer. In causal diagram terminology, we want to know if these two factors are *D-connected* (as in, directionally connected). Since we are assuming that there's no causal relationship, any D-connection is caused by other factors. Try `ggdag_dconnected()` to see if we coffee and lung cancer are D-connected.
 
