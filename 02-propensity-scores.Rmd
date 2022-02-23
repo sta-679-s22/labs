@@ -111,4 +111,4 @@ glimpse(customer_data)
 
 7. Use the `augment` function to add the propensity score to your data frame. 
 
-8. Examine the distribution of propensity score between the two groups. Create a plot to show this. What do you notice? Describe the plot.
+8. Examine the distribution of propensity score between the two groups. Create a plot to show this. Make sure your plot is "presentation ready" (axis labels, clear legend description or labels to describe histograms, if histograms overlap too much make sure to mirror them, etc.) What do you notice? Describe the plot.
