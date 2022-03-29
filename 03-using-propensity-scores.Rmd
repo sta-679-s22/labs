@@ -1,0 +1,140 @@
+---
+title: "Lab 03 - Using Propensity Scores"
+output: 
+  tufte::tufte_html:
+    tufte_variant: "envisioned"
+    highlight: pygments
+    css: lab.css
+link-citations: yes
+---
+
+# Getting Started
+
+- Clone the repository 
+
+- Go to our class's GitHub organization [sta-679-s22](https://github.com/sta-679-s22)
+- Find the GitHub repository (which we'll refer to as "repo" going forward) for this lab, `lab-03-using-propensity-scores-YOUR-GITHUB-HANDLE`. This repo contains a template you can build on to complete your assignment.
+
+```{r clone-repo-link, fig.margin = TRUE, echo = FALSE, fig.width=3}
+knitr::include_graphics("img/01/clone-repo-link.png")
+```
+
+- On GitHub, click on the green **Clone or download** button, select **Use HTTPS** (this might already be selected by default, and if it is, you'll see the text **Clone with HTTPS** as in the image below). Click on the clipboard icon to copy the repo URL.
+
+```{r new-project-from-gh, fig.margin = TRUE, echo = FALSE, fig.width=3}
+knitr::include_graphics("img/01/new-project-from-gh.png")
+```
+
+- Go to RStudio Click File > New Project > Version Control > Git. In "Repository URL", paste the URL of your GitHub repository. It will be something like `https://github.com/LucyMcGowan/myrepo.git`.
+
+# Packages
+
+In this lab we will work with two packages: `tidyverse` which is a collection of packages for doing data analysis in a "tidy" way and `smd`, a package to estimate standardized mean differences.
+
+Install these packages by running the following in the console (these are likely already installed since we've used them in your application exercises).
+
+```{r eval = FALSE}
+install.packages("tidyverse")
+install.packages("smd")
+```
+
+Now that the necessary package is installed, you should be able to Knit your document and see the results.
+
+If you'd like to run your code in the Console as well you'll also need to load the package there. To do so, run the following in the console. 
+
+```{r eval = TRUE, message = FALSE, warning = FALSE}
+library(tidyverse) 
+library(smd)
+```
+
+Note that the package is also loaded with the same commands in your R Markdown document.
+
+# Warm up
+
+Before we introduce the data, let's warm up with some simple exercises. 
+
+
+```{marginfigure}
+The top portion of your R Markdown file (between the three dashed lines) is called YAML. It stands for "YAML Ain't Markup Language". It is a human friendly data serialization standard for all programming languages. All you need to know is that this area is called the YAML (we will refer to it as such) and that it contains meta information about your document.
+```
+
+## YAML: 
+
+Open the R Markdown (Rmd) file in your project, change the author name to your name, and knit the document.
+
+```{r yaml-raw-to-rendered, fig.fullwidth=TRUE, echo = FALSE}
+knitr::include_graphics("img/01/yaml-raw-to-rendered.png")
+```
+
+## Commiting changes:
+
+Then Go to the Git pane in your RStudio.
+
+If you have made changes to your Rmd file, you should see it listed here. Click on it to select it in this list and then click on **Diff**. This shows you the *diff*erence between the last committed state of the document and its current state that includes your changes. If you're happy with these changes, write "Update author name" in the **Commit message** box and hit **Commit**.
+
+```{r update-author-name-commit, fig.fullwidth=TRUE, echo = FALSE}
+knitr::include_graphics("img/01/update-author-name-commit.png")
+```
+
+You don't have to commit after every change, this would get quite cumbersome. You should consider committing states that are *meaningful to you* for inspection, comparison, or restoration. In the first few assignments we will tell you exactly when to commit and in some cases, what commit message to use. As the semester progresses we will let you make these decisions.
+
+## Pushing changes: 
+
+Now that you have made an update and committed this change, it's time to push these changes to the web! Or more specifically, to your repo on GitHub. Why? So that others can see your changes. And by others, I mean me (your repos in this course are private to you and me, only). 
+
+In order to push your changes to GitHub, click on **Push**. 
+
+# Exercises
+
+For the following exercises, be sure to include a written explanation of your results (in full sentences) in addition to any R output. All figures should be "publication ready" in that they have correct axis labels, legends, etc (labels should be words, not variable names - ie with spaces, not underscores, etc.).
+
+You were contacted by the Coffee Company to assess whether people who live in Coffee Town consume more coffee than a neighboring town. The Coffee Company provided you with the following DAG to describe their assumed relationship between variables they have collected between the two towns. They think that smokers are more likely to live in the Coffee Town, they think more people with difficult jobs live in Coffee Town, and they think that age also predicts which town you live in. Additionally, they suspect that age, whether you smoke, and the difficulty of your job influences the number of cups of coffee and individual drinks. They've asked you to calculate the average causal effect for the "equipoise" population, that is the population of individuals who reasonably could live in either town.
+
+```{r, echo = FALSE, message=FALSE, warning=FALSE}
+library(ggdag)
+coord_dag <- list( 
+  x = c(age = 1, smoke = 1, job = 1, coffee_town = 2, cups_of_coffee = 3),
+  y = c(age = 0.5, smoke = 1, job = 1.5, coffee_town = 1, cups_of_coffee = .8) 
+) 
+
+dagify(
+  cups_of_coffee ~ coffee_town + age + smoke + job ,
+  coffee_town ~ age + job + smoke,
+  coords = coord_dag,
+  labels = list(cups_of_coffee = "cups_of_coffee",
+                age = "age",
+                job = "job",
+                smoke = "smoke",
+                coffee_town = "coffee_town")
+) %>%
+  tidy_dagitty() %>%
+ ggplot(aes(x = x, y = y, xend = xend, yend = yend)) +
+    geom_dag_point() +
+    geom_dag_label_repel(aes(label = label),
+      col = "white", fill = "cornflower blue", show.legend = FALSE, label.padding = .5) +
+      geom_dag_edges() +
+    theme_dag()
+```
+
+
+1. Read in the `coffee_town_df.csv` data frame. Describe the data (what are the columns, how many observations, how many in the exposed group, any missing data? etc.)
+
+2. Create an unweighted Table 1 by exposure group for these data. Describe what you see.
+
+3. Fit a propensity score model using the DAG provided. Examine the distribution of propensity scores by exposure group. What do you see?
+
+4. The Coffee Company researchers have asked you to calculate the average causal effect for the "equipoise" population, that is the population of individuals who reasonably could live in either town. Calculate an appropriate weight based on this question. Describe the causal estimand you will be estimating using this weight.
+
+5. Create a weighted Table 1 using the weight in the previous exercise. Compare this to the Table 1 from Exercise 2.
+
+6. Examine the distribution of propensity score between the two groups, weighted by the weight chosen in Exercise 4. Create a plot to show this. Make sure your plot is "presentation ready" (axis labels, clear legend description or labels to describe histograms, if histograms overlap too much make sure to mirror them, etc.) What do you notice? Describe the plot.
+
+7. Create a Love Plot comparing the weighted and unweighted standardized mean differences. Describe what you see.
+
+8. Create unweighted and weighted eCDF plot(s) for all continuous confounders. Describe what you see.
+
+9. Based on Exercises 6 and 7, refit your propensity score model if necessary. Recreate the weighted histograms, Love Plot, and eCDF plots for your new propensity score model (iterating until you are satisfied with the result). If you don't think you need to make any changes describe why not.
+
+10. Estimate the average causal effect using your final propensity score model and weight. Explain what this means in words. 
+
+BONUS: The average causal effect in exercise 10 is a point estimate. Ultimately, we are interested in additionally quantifying the uncertainty. Describe how you might estimate the uncertainty bounds for this estimate.
