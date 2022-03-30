@@ -29,13 +29,15 @@ knitr::include_graphics("img/01/new-project-from-gh.png")
 
 # Packages
 
-In this lab we will work with two packages: `tidyverse` which is a collection of packages for doing data analysis in a "tidy" way and `smd`, a package to estimate standardized mean differences.
+In this lab we will work with four packages: `tidyverse` which is a collection of packages for doing data analysis in a "tidy" way, `smd`, a package to estimate standardized mean differences, `gtsummary` for creating our Table 1s, and `survey` to allow us to create weighted tables.
 
 Install these packages by running the following in the console (these are likely already installed since we've used them in your application exercises).
 
 ```{r eval = FALSE}
 install.packages("tidyverse")
 install.packages("smd")
+install.packages("gtsummary")
+install.packages("survey")
 ```
 
 Now that the necessary package is installed, you should be able to Knit your document and see the results.
@@ -45,6 +47,8 @@ If you'd like to run your code in the Console as well you'll also need to load t
 ```{r eval = TRUE, message = FALSE, warning = FALSE}
 library(tidyverse) 
 library(smd)
+library(gtsummary)
+library(survey)
 ```
 
 Note that the package is also loaded with the same commands in your R Markdown document.
@@ -133,7 +137,7 @@ dagify(
 
 8. Create unweighted and weighted eCDF plot(s) for all continuous confounders. Describe what you see.
 
-9. Based on Exercises 6 and 7, refit your propensity score model if necessary. Recreate the weighted histograms, Love Plot, and eCDF plots for your new propensity score model (iterating until you are satisfied with the result). If you don't think you need to make any changes describe why not.
+9. Based on Exercises 7 and 8, refit your propensity score model if necessary. Recreate the weighted histograms, Love Plot, and eCDF plots for your new propensity score model (iterating until you are satisfied with the result). If you don't think you need to make any changes describe why not.
 
 10. Estimate the average causal effect using your final propensity score model and weight. Explain what this means in words. 
 
